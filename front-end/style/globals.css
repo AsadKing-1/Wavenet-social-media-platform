@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5e8b7e;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #7a90a4;
+  --color-secondary-foreground: #ffffff;
+
+  --color-tertiary: #c48c7f;
+  --color-tertiary-foreground: #ffffff;
+
+  /* Surfaces & Backgrounds */
+  --color-surface: #fbf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fbf9f8;
+
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0edec;
+  --color-surface-container-high: #eaeaeb;
+  --color-surface-container-highest: #e4e2e1;
+
+  /* Text & Outlines */
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #444746;
+  --color-outline: #747775;
+  --color-outline-variant: #c4c7c5;
+
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Borders & Shapes (Roundness: ROUND_EIGHT) */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Layout Constants */
+  --spacing-content-max: 720px;
+
+  /* Effects */
+  --shadow-soft:
+    0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Base styles using the theme variables */
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom utility for WaveNet's centered content */
+@layer utilities {
+  .content-shell {
+    max-width: var(--spacing-content-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.scroll-icon {
+  animation: float 1s ease-in-out infinite;
+}

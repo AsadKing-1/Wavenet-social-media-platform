@@ -1,0 +1,18 @@
+database:
+  host: "localhost"
+  port: 5432
+  username: "postgre"
+  password: "postgre"
+  log_level: "DEBUG"
+  log_file: "db.log"
+http_server:
+  host: "localhost"
+  port: 8000
+  log_level: "DEBUG"
+  log_file: "api.log"
+smtp_server:
+  host: "localhost"
+  port: 2525
+  log_level: "DEBUG"
+  log_file: "smtp.log"
+
