@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import "@/style/globals.css";
 
 import LandingHeader from "@/features/LandingHeader/ui/LandingHeader";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "WaveNet - Social Media Platform",
@@ -17,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={cn("h-full antialiased", "font-sans", geist.variable)}>
 
       <body className="min-h-full flex flex-col"> <LandingHeader/> {children}</body>
     </html>
