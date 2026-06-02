@@ -1,17 +1,18 @@
 database:
-  host: "localhost"
+  host: "127.0.0.1"
   port: 5432
-  username: "postgre"
-  password: "postgre"
+  dbname: "wavenet_db"
+  username: "postgres"
+  password: "postgres"
   log_level: "DEBUG"
   log_file: "db.log"
 http_server:
-  host: "localhost"
+  host: "127.0.0.1"
   port: 8000
   log_level: "DEBUG"
   log_file: "api.log"
 smtp_server:
-  host: "localhost"
+  host: "127.0.0.1"
   port: 2525
   log_level: "DEBUG"
   log_file: "smtp.log"
