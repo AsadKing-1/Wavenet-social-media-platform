@@ -19,6 +19,8 @@ func main() {
 	api := e.Group("/api")
 	{
 		api.GET("/users", func(c echo.Context) error { return handlers.GetUsers(c, db) }) // Получить всех пользователей
+		api.POST("/user", func(c echo.Context) error { return handlers.CreateUser(c, db) }) // Создать нового пользователя
+		api.DELETE("/user", func(c echo.Context) error { return handlers.DeleteUser(c, db) })
 	}
 	e.Start(fmt.Sprintf("%s:%d", HTTPServerConnfig.Host, HTTPServerConnfig.Port))
 }

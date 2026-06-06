@@ -81,3 +81,13 @@ func (s *PostgresStorage) AuthenticateUser(name string, password string) (bool, 
 
 	return security.CheckPassword(user.Password, password), nil
 }
+
+func (s *PostgresStorage) DeleteUserByID(id int) error {
+	return s.db.Delete(&models.User{}, id).Error
+}
+
+func (s *PostgresStorage) UpdateUser(id int32, new_password string) error{
+	password, _ := security.HashPassword(new_password)
+	s.db.Model(&models.User{}).Where("id = ?", id).Update("password", password)
+	return nil
+}

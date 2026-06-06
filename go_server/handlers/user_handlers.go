@@ -2,62 +2,150 @@ package handlers
 
 import (
 	"net/http"
-	"github.com/labstack/echo/v4"
+	"strconv"
+
 	"github.com/IGMA-IGMA/WaveNet-socialmedia/go_server/models"
-    "github.com/IGMA-IGMA/WaveNet-socialmedia/go_server/storage"
+	"github.com/IGMA-IGMA/WaveNet-socialmedia/go_server/storage"
+	"github.com/labstack/echo/v4"
 )
 
 func GetUsers(c echo.Context, db *storage.PostgresStorage) error {
-    users, err := db.GetUsers()
+	users, err := db.GetUsers()
 
+	if err != nil {
+		response := models.FormingResponse(
+			int32(http.StatusInternalServerError),
+			[]models.User{},
+			"Ошибка получения пользователей",
+			err.Error(),
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	response := models.FormingResponse(
+		int32(http.StatusOK),
+		users,
+		"Успешно получено",
+		"",
+	)
+	return c.JSON(http.StatusOK, response)
+}
+
+func CreateUser(c echo.Context, db *storage.PostgresStorage) error {
+	var user models.User
+
+	if err := c.Bind(&user); err != nil {
+		response := models.FormingResponse(
+			int32(http.StatusInternalServerError),
+			[]models.User{},
+			"Ошибка получения пользователей",
+			err.Error(),
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	err := db.CreateUser(&user)
+	if err != nil {
+		response := models.FormingResponse(
+			int32(http.StatusInternalServerError),
+			[]models.User{},
+			"Ошибка создания пользователя",
+			err.Error(),
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	response := models.FormingResponse(
+		int32(http.StatusOK),
+		&models.User{Name: user.Name, Email: user.Email},
+		"Пользователь успешно создан",
+		"",
+	)
+	return c.JSON(http.StatusOK, response)
+}
+
+func DeleteUser(c echo.Context, db *storage.PostgresStorage) error {
+	id := c.QueryParam("id")
+	if id == "" {
+		response := models.FormingResponse(int32(http.StatusBadRequest), []models.User{}, "Неверный запрос", "")
+		return c.JSON(http.StatusBadRequest, response)
+	}
+	idInt, _ := strconv.Atoi(id)
+
+	err := db.DeleteUser(idInt)
+    
+    if err != nil {
+        response := models.FormingResponse(int32(http.StatusInternalServerError), []models.User{}, "Ошибка удаления пользователя", err.Error())
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+	response := models.FormingResponse(int32(http.StatusOK), []models.User{}, "Пользователь успешно удален", "")
+	return c.JSON(http.StatusOK, response)
+}
+
+func UpdateUser(c echo.Context, db *storage.PostgresStorage) error {
+    id := c.QueryParam("id")
+    
+    if id == "" {
+        response := models.FormingResponse(
+            int32(http.StatusBadRequest), 
+            []models.User{}, 
+            "Неверный запрос", 
+            "ID is required",
+        )
+        return c.JSON(http.StatusBadRequest, response)
+    }
+    
+    var request struct {
+        Password string `json:"password"`
+    }
+    
+    if err := c.Bind(&request); err != nil {
+        response := models.FormingResponse(
+            int32(http.StatusBadRequest), 
+            []models.User{}, 
+            "Неверный формат запроса", 
+            err.Error(),
+        )
+        return c.JSON(http.StatusBadRequest, response)
+    }
+    
+    if request.Password == "" {
+        response := models.FormingResponse(
+            int32(http.StatusBadRequest), 
+            []models.User{}, 
+            "Неверный запрос", 
+            "Password is required",
+        )
+        return c.JSON(http.StatusBadRequest, response)
+    }
+    
+    idInt, err := strconv.Atoi(id)
+    if err != nil {
+        response := models.FormingResponse(
+            int32(http.StatusBadRequest), 
+            []models.User{}, 
+            "Неверный формат ID", 
+            err.Error(),
+        )
+        return c.JSON(http.StatusBadRequest, response)
+    }
+    
+    err = db.UpdateUser(int32(idInt), request.Password)
     if err != nil {
         response := models.FormingResponse(
             int32(http.StatusInternalServerError), 
-            []models.User{},                       
-            "Ошибка получения пользователей",      
-            err.Error(),                           
+            []models.User{}, 
+            "Ошибка обновления пароля", 
+            err.Error(),
         )
         return c.JSON(http.StatusInternalServerError, response)
     }
     
     response := models.FormingResponse(
-        int32(http.StatusOK),  
-        users,                 
-        "Успешно получено",    
-        "",                    
+        int32(http.StatusOK), 
+        []models.User{}, 
+        "Пароль успешно обновлен", 
+        "",
     )
     return c.JSON(http.StatusOK, response)
-}
-
-// CreateUser - создает нового пользователя (POST запрос)
-func CreateUser(c echo.Context) error {
-    var user models.User
-
-    // Преобразуем JSON в структуру User
-    if err := c.Bind(&user); err != nil {
-        return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-    }
-
-    // Здесь будет логика сохранения в БД
-    
-    // Возвращаем созданного пользователя
-    return c.JSON(http.StatusCreated, map[string]interface{}{
-        "message": "Пользователь создан",
-        "user":    user,
-    })
-}
-
-// GetUserByID - возвращает пользователя по ID (GET запрос)
-func GetUserByID(c echo.Context) error {
-    id := c.Param("id")
-    
-    // Здесь будет логика получения пользователя из БД по id
-    
-    user := models.User{
-        Name:  "User " + id,
-        Email: "user" + id + "@example.com",
-        Password: "***",
-    }
-    
-    return c.JSON(http.StatusOK, user)
 }
