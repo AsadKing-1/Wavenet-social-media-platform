@@ -4,20 +4,29 @@ import (
 	"net/http"
 	"github.com/labstack/echo/v4"
 	"github.com/IGMA-IGMA/WaveNet-socialmedia/go_server/models"
+    "github.com/IGMA-IGMA/WaveNet-socialmedia/go_server/storage"
 )
 
-// GetUsers - возвращает список всех пользователей (GET запрос)
-func GetUsers(c echo.Context) error {
-    // Для GET запроса не нужно парсить тело запроса
-    // Здесь будет логика получения пользователей из БД
-    
-    // Временные тестовые данные
-    users := []models.User{
-        {Name: "Alice", Email: "alice@example.com", Password: "***"},
-        {Name: "Bob", Email: "bob@example.com", Password: "***"},
+func GetUsers(c echo.Context, db *storage.PostgresStorage) error {
+    users, err := db.GetUsers()
+
+    if err != nil {
+        response := models.FormingResponse(
+            int32(http.StatusInternalServerError), 
+            []models.User{},                       
+            "Ошибка получения пользователей",      
+            err.Error(),                           
+        )
+        return c.JSON(http.StatusInternalServerError, response)
     }
     
-    return c.JSON(http.StatusOK, users)
+    response := models.FormingResponse(
+        int32(http.StatusOK),  
+        users,                 
+        "Успешно получено",    
+        "",                    
+    )
+    return c.JSON(http.StatusOK, response)
 }
 
 // CreateUser - создает нового пользователя (POST запрос)
