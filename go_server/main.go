@@ -18,9 +18,9 @@ func main() {
 	e := echo.New()
 	api := e.Group("/api")
 	{
-		api.GET("/users", handlers.GetUsers)        // Получить всех пользователей
-		api.POST("/users", handlers.CreateUser)     // Создать пользователя
-		api.GET("/users/:id", handlers.GetUserByID) // Получить пользователя по ID
+		api.GET("/users", func(c echo.Context) error { return handlers.GetUsers(c, db) }) // Получить всех пользователей
+		api.POST("/user", func(c echo.Context) error { return handlers.CreateUser(c, db) }) // Создать нового пользователя
+		api.DELETE("/user", func(c echo.Context) error { return handlers.DeleteUser(c, db) })
 	}
 	e.Start(fmt.Sprintf("%s:%d", HTTPServerConnfig.Host, HTTPServerConnfig.Port))
 }

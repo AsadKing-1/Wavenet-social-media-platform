@@ -7,6 +7,7 @@ type UserStorage interface {
     CreateUser(user models.User) (int, error)   
     GetUserByID(id int) (models.User, error)    
     UpdateUser(user models.User) error          
-    DeleteUser(id int) error                    
+    DeleteUser(id int) error    
+    CheckUserPassword(user models.User) (bool, error)                
 }
 
