@@ -1,21 +1,20 @@
-import axios from "axios";
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+import { axiosInstance } from "./axiosInstance";
 
 export const userAPI = {
     getAll: async () => {
-        const res = await axios.get(`${API_BASE_URL}/users`);
+        const res = await axiosInstance.get("/users");
         return res.data;
     },
     create: async (userData: { name: string; email: string; password: string }) => {
-        const res = await axios.post(`${API_BASE_URL}/users`, userData);
+        const res = await axiosInstance.post("/users", userData);
         return res.data;
     },
     getById: async (id: string) => {
-        const res = await axios.get(`${API_BASE_URL}/users/${id}`);
+        const res = await axiosInstance.get(`/users/${id}`);
         return res.data;
     },
     login: async (credentials: { email: string; password: string }) => {
-        const res = await axios.post(`${API_BASE_URL}/login`, credentials);
+        const res = await axiosInstance.post("/login", credentials);
         return res.data;
     },
 }

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
-import { getAuthToken } from "@/lib/authToken";
+import { userAPI } from "@/lib/api/userAPI";
 
 type User = {
     name: string;
@@ -23,19 +23,7 @@ export default function DashboardPage() {
 
         const fetchUsers = async () => {
             try {
-                const token = getAuthToken();
-                const res = await fetch("http://127.0.0.1:8000/api/users", {
-                    cache: "no-store",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) {
-                    throw new Error("Ошибка при загрузке пользователей");
-                }
-
-                const data = await res.json();
+                const data = await userAPI.getAll();
                 setUsers(data);
             } catch (err: unknown) {
                 const message = err instanceof Error ? err.message : "Неизвестная ошибка";
