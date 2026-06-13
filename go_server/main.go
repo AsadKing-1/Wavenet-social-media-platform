@@ -24,6 +24,9 @@ func main() {
 		api.POST("/user", func(c echo.Context) error { return handlers.CreateUser(c, db) }) // Создать нового пользователя
 		api.DELETE("/user", func(c echo.Context) error { return handlers.DeleteUser(c, db) })
 		api.PUT("/user", func(c echo.Context) error { return handlers.UpdateUser(c, db)})
+
+		api.GET("/publics", func (c echo.Context) error { return handlers.Getpublications(c, db)})
+		api.POST("public", func (c echo.Context) error { return handlers.CreatePublication(c, db)})
 	}
 	e.Start(fmt.Sprintf("%s:%d", HTTPServerConnfig.Host, HTTPServerConnfig.Port))
 }
