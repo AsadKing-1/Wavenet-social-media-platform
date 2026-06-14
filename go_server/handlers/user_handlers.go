@@ -73,9 +73,9 @@ func DeleteUser(c echo.Context, db *storage.PostgresStorage) error {
 	idInt, _ := strconv.Atoi(id)
 
 	err := db.DeleteUser(idInt)
-    
-    if err != nil {
-        response := models.FormingResponse(int32(http.StatusInternalServerError), []models.User{}, "Ошибка удаления пользователя", err.Error())
+
+	if err != nil {
+		response := models.FormingResponse(int32(http.StatusInternalServerError), []models.User{}, "Ошибка удаления пользователя", err.Error())
 		return c.JSON(http.StatusInternalServerError, response)
 	}
 	response := models.FormingResponse(int32(http.StatusOK), []models.User{}, "Пользователь успешно удален", "")
@@ -83,69 +83,73 @@ func DeleteUser(c echo.Context, db *storage.PostgresStorage) error {
 }
 
 func UpdateUser(c echo.Context, db *storage.PostgresStorage) error {
-    id := c.QueryParam("id")
-    
-    if id == "" {
-        response := models.FormingResponse(
-            int32(http.StatusBadRequest), 
-            []models.User{}, 
-            "Неверный запрос", 
-            "ID is required",
-        )
-        return c.JSON(http.StatusBadRequest, response)
-    }
-    
-    var request struct {
-        Password string `json:"password"`
-    }
-    
-    if err := c.Bind(&request); err != nil {
-        response := models.FormingResponse(
-            int32(http.StatusBadRequest), 
-            []models.User{}, 
-            "Неверный формат запроса", 
-            err.Error(),
-        )
-        return c.JSON(http.StatusBadRequest, response)
-    }
-    
-    if request.Password == "" {
-        response := models.FormingResponse(
-            int32(http.StatusBadRequest), 
-            []models.User{}, 
-            "Неверный запрос", 
-            "Password is required",
-        )
-        return c.JSON(http.StatusBadRequest, response)
-    }
-    
-    idInt, err := strconv.Atoi(id)
-    if err != nil {
-        response := models.FormingResponse(
-            int32(http.StatusBadRequest), 
-            []models.User{}, 
-            "Неверный формат ID", 
-            err.Error(),
-        )
-        return c.JSON(http.StatusBadRequest, response)
-    }
-    
-    err = db.UpdateUser(int32(idInt), request.Password)
-    if err != nil {
-        response := models.FormingResponse(
-            int32(http.StatusInternalServerError), 
-            []models.User{}, 
-            "Ошибка обновления пароля", 
-            err.Error(),
-        )
-        return c.JSON(http.StatusInternalServerError, response)
-    }
-    
-    response := models.FormingResponse(
-        int32(http.StatusOK), 
-        []models.User{}, 
-        "Пароль успешно обновлен", 
-        "",
-    )
-    return c.JSON(http.StatusOK, response)
+	id := c.QueryParam("id")
+	password := c.QueryParam("password")
+
+	if id == "" {
+		response := models.FormingResponse(
+			int32(http.StatusBadRequest),
+			[]models.User{},
+			"Неверный запрос",
+			"ID is required",
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	if password == "" {
+		response := models.FormingResponse(
+			int32(http.StatusBadRequest),
+			[]models.User{},
+			"Неверный запрос",
+			"Password is required",
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		response := models.FormingResponse(
+			int32(http.StatusBadRequest),
+			[]models.User{},
+			"Неверный формат ID",
+			err.Error(),
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	err = db.UpdateUser(int32(idInt), password)
+	if err != nil {
+		response := models.FormingResponse(
+			int32(http.StatusInternalServerError),
+			[]models.User{},
+			"Ошибка обновления пароля",
+			err.Error(),
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	response := models.FormingResponse(
+		int32(http.StatusOK),
+		[]models.User{},
+		"Пароль успешно обновлен",
+		"",
+	)
+	return c.JSON(http.StatusOK, response)
+}
+
+func Health(c echo.Context, e *echo.Echo) error {
+	var routelist []map[string]string
+	for _, route := range e.Routes() {
+		routelist = append(routelist, map[string]string{
+			"method": route.Method,
+			"path":   route.Path,
+		})
+	}
+	response := models.FormingResponse(
+		int32(http.StatusOK),
+		routelist,
+		"Успешно",
+		"",
+	)
+	return c.JSON(http.StatusOK, response)
 }

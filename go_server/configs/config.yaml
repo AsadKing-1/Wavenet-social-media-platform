@@ -5,15 +5,15 @@ database:
   username: "postgres"
   password: "postgres"
   log_level: "DEBUG"
-  log_file: "db.log"
+  log_file: "db.json"
 http_server:
   host: "127.0.0.1"
   port: 8000
   log_level: "DEBUG"
-  log_file: "api.log"
+  log_file: "api.json"
 smtp_server:
   host: "127.0.0.1"
   port: 2525
   log_level: "DEBUG"
-  log_file: "smtp.log"
+  log_file: "smtp.json"
 
