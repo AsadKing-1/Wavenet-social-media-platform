@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -39,39 +38,8 @@ export default function DashboardPage() {
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-background p-6">
-                <div className="max-w-4xl mx-auto">
-                    <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-                        <button
-                            onClick={logout}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-                        >
-                            Выход
-                        </button>
-                    </div>
-
-                    {loading && <p className="text-lg">Загрузка пользователей...</p>}
-                    {error && <p className="text-lg text-red-500">{error}</p>}
-
-                    {!loading && !error && users.length === 0 && (
-                        <p className="text-lg text-muted-foreground">Пользователей не найдено</p>
-                    )}
-
-                    {!loading && users.length > 0 && (
-                        <div className="grid gap-4">
-                            {users.map((user) => (
-                                <div
-                                    key={user.email}
-                                    className="bg-card border border-border rounded-lg p-4 shadow"
-                                >
-                                    <h2 className="text-xl font-semibold text-foreground">{user.name}</h2>
-                                    <p className="text-muted-foreground">{user.email}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+            <div>
+                <h1>Панель управления</h1>
             </div>
         </ProtectedRoute>
     );

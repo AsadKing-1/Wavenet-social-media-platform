@@ -16,6 +16,8 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { getSafeRedirect } from "@/lib/safeRedirect";
+
 interface LoginFormData {
     email: string;
     password: string;
@@ -23,12 +25,7 @@ interface LoginFormData {
 
 function getSafeNextPath() {
     const nextPath = new URLSearchParams(window.location.search).get("next");
-
-    if (nextPath?.startsWith("/") && !nextPath.startsWith("//")) {
-        return nextPath;
-    }
-
-    return "/dashboard";
+    return getSafeRedirect(nextPath, "/dashboard");
 }
 
 export default function LoginPage() {
@@ -42,10 +39,8 @@ export default function LoginPage() {
             setLoginError(null);
             const result = await userAPI.login(data);
             
-            // Сохраняем токен
             if (result.token) {
                 setAuthToken(result.token);
-                // Редирект на dashboard используя window.location для hard refresh
                 window.location.assign(getSafeNextPath());
             } else {
                 setLoginError("Сервер не вернул токен");
