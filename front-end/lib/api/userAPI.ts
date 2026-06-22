@@ -6,7 +6,7 @@ export const userAPI = {
         return res.data;
     },
     create: async (userData: { name: string; email: string; password: string }) => {
-        const res = await axiosInstance.post("/users", userData);
+        const res = await axiosInstance.post("/user", userData);
         return res.data;
     },
     getById: async (id: string) => {
