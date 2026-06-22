@@ -1,18 +1,44 @@
 package security
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
+import "golang.org/x/crypto/bcrypt"
 
+// ===========================================================
+// Утилиты для безопасной работы с паролями через bcrypt.
+//
+// bcrypt — алгоритм хэширования специально разработанный
+// для паролей. Его особенности:
+//  1. Медленный намеренно (cost=14 → ~1 секунда на хэш)
+//     → защита от брутфорса даже при утечке БД
+//  2. Автоматически добавляет соль (salt) → одинаковые пароли
+//     дают разные хэши каждый раз
+//  3. Хэш содержит в себе cost-фактор → проверка не требует
+//     знать исходные параметры
+//
+// НЕ используй MD5/SHA1/SHA256 для паролей — они слишком быстрые!
+// ===========================================================
+
+// HashPassword — хэширует пароль через bcrypt с cost=14.
+//
+// Cost определяет количество итераций: 2^14 = 16384 раундов.
+// Чем выше cost — тем медленнее (и безопаснее), но дольше ответ сервера.
+// cost=14 — хороший баланс для большинства приложений (2026 год).
+//
+// Возвращает строку вида: "$2a$14$..." которую безопасно хранить в БД.
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
-func CheckPassword(hashedPassword string, password string) bool{
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
-		return false
-	} else {
-		return true
-	}	
+// CheckPassword — сравнивает открытый пароль с bcrypt хэшем.
+//
+// Внутри вызывает bcrypt.CompareHashAndPassword который:
+//  1. Извлекает соль из хэша
+//  2. Хэширует введённый пароль с той же солью
+//  3. Сравнивает результат
+//
+// Возвращает true если пароль совпадает, false если нет.
+// Использует constant-time comparison для защиты от timing атак.
+func CheckPassword(hashedPassword string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }
